@@ -241,3 +241,100 @@ const fs = require('node:fs');
 // }
 
 // 6: reading directory contents
+// method 1
+// fs.readdir('./newDir', (err, data) => {
+//     if(err) {
+//         console.log(err);
+//     }else {
+//         console.log(data);
+//     }
+// })
+
+// method 2
+// try {
+//     const data = fs.readdirSync('./newDir');
+//     console.log(data);
+// } catch (error) {
+//     console.error(error);
+// }
+
+// 7: removing directory
+// method 1
+// fs.rmdir('./myDir', err => {
+//     if(err){
+//         console.error(err);
+//     }else {
+//         console.log('directory deleted');
+//     }
+// })
+
+// method 2
+// try {
+//     fs.rmdirSync('./myDir');
+//     console.log('directory deleted');
+// } catch (error) {
+//     console.error(error);
+// }
+
+// 8: checking if a file or directory exists
+// if(fs.existsSync('./myDir')) {
+//     fs.rmdir('./myDir', err => {
+//         if(err) {
+//             console.error(err);
+//         }
+//     })
+// }else {
+//     console.log('File directory does not exists');
+// }
+
+// 9: renaming a file path
+// fs.rename('./newDir', './newRenamed', err => {
+//     if(err) {
+//         console.error(err);
+//     }else {
+//         console.log('sucessfully renamed');
+//     }
+// })
+
+// path modules
+const path = require('node:path')
+// fs.readFile(path.join(__dirname, 'newRenamed', 'hello.txt'), 'utf8', (err, data) => {
+//     if(err){
+//         console.error(err);
+//     }else {
+//         console.log(data)
+//     }
+// })
+
+// try {
+//     const data = fs.readFileSync(path.join(__dirname, 'newRenamed', 'hello.txt'));
+//     console.log(`the data is: ${data}`);
+// } catch (error) {
+//     console.error(error);
+// }
+
+// Extracting Pars of a path
+// path.basename()    -> extracts the file name from a path
+
+// Get the file name with extension
+// const fileName = path.basename('./newRenamed/hello.txt');
+
+// Get the file name without extension
+// const fileName = path.basename('./newRenamed/hello.txt', '.txt');
+// console.log(fileName);
+
+// path.dirname() -> extracts the directory part of a path, which is everything before the file name
+// const directoryName = path.dirname('./newRenamed/hello.txt');
+// console.log(directoryName);
+
+// extname() ->  Get the file extension
+// const fileExtension = path.extname('./newRenamed/hello.txt')
+// console.log(fileExtension);
+
+// path.parse()
+const parsedPath = path.parse('./newRenamed/home.txt');
+console.log(parsedPath);
+
+// path.format()
+const formatedPath = path.format(parsedPath);
+// console.log(formatedPath);
