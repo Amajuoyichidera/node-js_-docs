@@ -333,8 +333,141 @@ const path = require('node:path')
 
 // path.parse()
 const parsedPath = path.parse('./newRenamed/home.txt');
-console.log(parsedPath);
+// console.log(parsedPath);
 
 // path.format()
 const formatedPath = path.format(parsedPath);
 // console.log(formatedPath);
+
+
+// creating a server
+const http = require('http');
+// const server = http.createServer((req, res) => {
+//     res.end('HELLO WORLD!');
+// })
+
+// server.listen(3000, () => {
+//     console.log('server is running on port 3000');
+// })
+
+// const server = http.createServer((req, res) => {
+//     console.log('Requested url', req.url);
+//     console.log('Requested Method', req.method);
+//     console.log('Requested Headers', req.headers);
+
+//     res.end('request details logged on server')
+// })
+
+// server.listen(3000, () => {
+//     console.log('server is running');
+// })
+
+// simple routing
+// const server = http.createServer((req, res) => {
+//     if(req.url === '/') {
+//         res.end('HELLO THIS IS HOME');
+//     }else if(req.url === '/about') {
+//         res.end('ABOUT PAGE');
+//     }else if(req.url === '/contact') {
+//         res.end('CONTACT PAGE');
+//     } else {
+//         res.statusCode = 404;
+//         res.end('404 NOT FOUND')
+//     }
+// })
+
+// server.listen(3000, () => {
+//     console.log('server running');
+// })
+
+
+// setting Headers and status codes
+// const myMessage = JSON.stringify({
+//     message: 'HELLO, I DEY LEARN NODE JS'
+// })
+
+// const server = http.createServer((req, res) => {
+//     if(req.url === '/json') {
+//         res.writeHead(200, { 'Content-Type': 'application/json'});
+//         res.end(myMessage);
+//     }else {
+//         res.writeHead(404, { 'Content-Type': 'text/plain'});
+//         res.end('404 NOT FOUND');
+//     }
+// })
+
+// server.listen(3000, () => {
+//     console.log('server running in port 3000')
+// })
+
+
+// sending json data
+// const server = http.createServer((req, res) =>{
+//     if(req.url === '/api/worker') {
+//         const data = [
+//             {
+//                 id: 1,
+//                 name: 'Amajuoyi chidera david',
+//                 age: 20,
+//                 career: 'Software engineer',
+//             },
+//             {
+//                 id: 2,
+//                 name: 'Amajuoyi ifeanyi Emmanuel',
+//                 age: 28,
+//                 career: 'Software engineer',
+//             }
+//         ]
+//         res.writeHead(200, {'Content-Type': 'application/json'});
+//         res.end(JSON.stringify(data));
+//     }else {
+//         res.writeHead(404, {'Content-Type': 'text/plain'});
+//         res.end('404 PAGE NOT FOUND');
+//     }
+// })
+
+// server.listen(3000, () => {
+//     console.log('server running in port 3000')
+// }),
+
+
+// CRUD OPERATIONS IN NODE JS
+
+// CREATING
+let employees = []
+let employeeId = 1;
+
+const server = http.createServer((req, res) => {
+    if(req.url === '/api/employees' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk;
+        })
+
+        req.on('end', () => {
+            const employee = JSON.parse(body);
+            employee.id = employeeId++;
+            employees.push(employee);
+
+            res.writeHead(201, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify(employee));
+        })
+    }else if(req.url === '/api/employees' && req.method === 'GET' ) {
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify(employees));
+    }else if(req.url.startsWith('/api/employees')) {
+        const id = parseInt(req.url.split('/')[3]);
+        const singleEmployee = employees.find((employee) => employee.id === id);
+        if(singleEmployee) {
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify(singleEmployee));
+        }else {
+            res.writeHead(404, {'Content-Type': 'text/plain'});
+            res.end('404 EMPLOYEE NOT FOUND');
+        }
+    }
+})
+
+server.listen(3000, () => {
+    console.log('server is running in port 3000');
+})
