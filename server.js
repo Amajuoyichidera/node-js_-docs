@@ -455,7 +455,7 @@ const server = http.createServer((req, res) => {
     }else if(req.url === '/api/employees' && req.method === 'GET' ) {
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify(employees));
-    }else if(req.url.startsWith('/api/employees')) {
+    }else if(req.url.startsWith('/api/employees/')) {
         const id = parseInt(req.url.split('/')[3]);
         const singleEmployee = employees.find((employee) => employee.id === id);
         if(singleEmployee) {
@@ -465,9 +465,32 @@ const server = http.createServer((req, res) => {
             res.writeHead(404, {'Content-Type': 'text/plain'});
             res.end('404 EMPLOYEE NOT FOUND');
         }
+    }else if(req.url.startsWith('/api/employees/') && req.method === 'PUT') {
+        const id = parseInt(req.url.split('/')[3]);
+        let body = '';
+
+        req.on('data', chunk => {
+            body += chunk;
+        })
+
+        req.on('end', () => {
+            const updatedBody = JSON.parse(body);
+            const employeeIndex = employees.findIndex(emp => emp.id === id);
+            if(employeeIndex !== -1) {
+                employees[employeeIndex] = { ...employees[employeeIndex], ...updatedBody};
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify(employees[employeeIndex]));
+            }else {
+                res.writeHead(404, {'Content-Type': 'test/json'});
+                res.end('404 NOT FOUND');
+            }
+        })
+
+
+
     }
 })
 
 server.listen(3000, () => {
     console.log('server is running in port 3000');
-})
+});
