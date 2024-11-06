@@ -465,29 +465,35 @@ const server = http.createServer((req, res) => {
             res.writeHead(404, {'Content-Type': 'text/plain'});
             res.end('404 EMPLOYEE NOT FOUND');
         }
-    }else if(req.url.startsWith('/api/employees/') && req.method === 'PUT') {
+    }if (req.url.startsWith('/api/employees/') && req.method === 'PUT') {
         const id = parseInt(req.url.split('/')[3]);
         let body = '';
 
         req.on('data', chunk => {
             body += chunk;
-        })
+        });
 
         req.on('end', () => {
-            const updatedBody = JSON.parse(body);
-            const employeeIndex = employees.findIndex(emp => emp.id === id);
-            if(employeeIndex !== -1) {
-                employees[employeeIndex] = { ...employees[employeeIndex], ...updatedBody};
-                res.writeHead(200, {'Content-Type': 'application/json'});
-                res.end(JSON.stringify(employees[employeeIndex]));
-            }else {
-                res.writeHead(404, {'Content-Type': 'test/json'});
-                res.end('404 NOT FOUND');
+            try {
+                const updatedBody = JSON.parse(body);
+                const employeeIndex = employees.findIndex(emp => emp.id === id);
+
+                if (employeeIndex !== -1) {
+                    employees[employeeIndex] = { ...employees[employeeIndex], ...updatedBody };
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify(employees[employeeIndex]));
+                } else {
+                    res.writeHead(404, { 'Content-Type': 'text/plain' }); // Corrected Content-Type
+                    res.end('404 NOT FOUND');
+                }
+            } catch (error) {
+                res.writeHead(400, { 'Content-Type': 'text/plain' });
+                res.end('Invalid JSON format');
             }
-        })
-
-
-
+        });
+    } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Route Not Found');
     }
 })
 
