@@ -434,69 +434,82 @@ const http = require('http');
 // CRUD OPERATIONS IN NODE JS
 
 // CREATING
-let employees = []
+let employees = [];
 let employeeId = 1;
 
 const server = http.createServer((req, res) => {
-    if(req.url === '/api/employees' && req.method === 'POST') {
+    if (req.url === '/api/employees' && req.method === 'POST') {
+        // Create a new employee
         let body = '';
-        req.on('data', chunk => {
-            body += chunk;
-        })
-
-        req.on('end', () => {
-            const employee = JSON.parse(body);
-            employee.id = employeeId++;
-            employees.push(employee);
-
-            res.writeHead(201, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify(employee));
-        })
-    }else if(req.url === '/api/employees' && req.method === 'GET' ) {
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify(employees));
-    }else if(req.url.startsWith('/api/employees/')) {
-        const id = parseInt(req.url.split('/')[3]);
-        const singleEmployee = employees.find((employee) => employee.id === id);
-        if(singleEmployee) {
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify(singleEmployee));
-        }else {
-            res.writeHead(404, {'Content-Type': 'text/plain'});
-            res.end('404 EMPLOYEE NOT FOUND');
-        }
-    }if (req.url.startsWith('/api/employees/') && req.method === 'PUT') {
-        const id = parseInt(req.url.split('/')[3]);
-        let body = '';
-
         req.on('data', chunk => {
             body += chunk;
         });
 
         req.on('end', () => {
             try {
-                const updatedBody = JSON.parse(body);
-                const employeeIndex = employees.findIndex(emp => emp.id === id);
+                const employee = JSON.parse(body);
+                employee.id = employeeId++;
+                employees.push(employee);
 
-                if (employeeIndex !== -1) {
-                    employees[employeeIndex] = { ...employees[employeeIndex], ...updatedBody };
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify(employees[employeeIndex]));
-                } else {
-                    res.writeHead(404, { 'Content-Type': 'text/plain' }); // Corrected Content-Type
-                    res.end('404 NOT FOUND');
-                }
+                res.writeHead(201, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(employee));
             } catch (error) {
                 res.writeHead(400, { 'Content-Type': 'text/plain' });
                 res.end('Invalid JSON format');
             }
         });
+
+    } else if (req.url === '/api/employees' && req.method === 'GET') {
+        // Retrieve all employees
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(employees));
+
+    } else if (req.url.startsWith('/api/employees/') && req.method === 'GET') {
+        // Retrieve a specific employee by ID
+        const id = parseInt(req.url.split('/')[3]);
+        const singleEmployee = employees.find(employee => employee.id === id);
+
+        if (singleEmployee) {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(singleEmployee));
+        } else {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end('404 EMPLOYEE NOT FOUND');
+        }
+
+    } else if (req.url.startsWith('/api/employees/') && req.method === 'PUT') {
+       const id = parseInt(req.url.split('/')[3]);
+        let body = '';
+        req.on('data', (chunk) => {
+            body += chunk;
+        })
+
+        req.on('end', () => {
+            try {
+                const updatedBody = JSON.parse(body);
+                const employeeIndex = employees.findIndex(emp => emp.id === id);
+                if(employeeIndex !== -1) {
+                    employees[employeeIndex] = {...employees[employeeIndex], ...updatedBody};
+                    res.writeHead(201, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify(employees[employeeIndex]));
+                }else {
+                    res.writeHead(404, {'Content-Type': 'text/plain'});
+                    res.end('404 EMPLOYEE NOT FOUND');
+                }
+                
+            } catch (error) {
+                res.writeHead(400, { 'Content-Type': 'text/plain' });
+                res.end('Invalid JSON format');
+            }
+        })
+
     } else {
+        // If no route matches, return 404 Not Found
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('Route Not Found');
     }
-})
+});
 
 server.listen(3000, () => {
-    console.log('server is running in port 3000');
+    console.log('Server is running on port 3000');
 });
