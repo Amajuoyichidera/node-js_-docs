@@ -433,83 +433,110 @@ const http = require('http');
 
 // CRUD OPERATIONS IN NODE JS
 
-// CREATING
-let employees = [];
-let employeeId = 1;
+// CREATE, READ, UPDATE AND DELETE
+// let employees = [];
+// let employeeId = 1;
 
-const server = http.createServer((req, res) => {
-    if (req.url === '/api/employees' && req.method === 'POST') {
-        // Create a new employee
-        let body = '';
-        req.on('data', chunk => {
-            body += chunk;
-        });
+// const server = http.createServer((req, res) => {
+//     if (req.url === '/api/employees' && req.method === 'POST') {
+//         // Create a new employee
+//         let body = '';
+//         req.on('data', chunk => {
+//             body += chunk;
+//         });
 
-        req.on('end', () => {
-            try {
-                const employee = JSON.parse(body);
-                employee.id = employeeId++;
-                employees.push(employee);
+//         req.on('end', () => {
+//             try {
+//                 const employee = JSON.parse(body);
+//                 employee.id = employeeId++;
+//                 employees.push(employee);
 
-                res.writeHead(201, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(employee));
-            } catch (error) {
-                res.writeHead(400, { 'Content-Type': 'text/plain' });
-                res.end('Invalid JSON format');
-            }
-        });
+//                 res.writeHead(201, { 'Content-Type': 'application/json' });
+//                 res.end(JSON.stringify(employee));
+//             } catch (error) {
+//                 res.writeHead(400, { 'Content-Type': 'text/plain' });
+//                 res.end('Invalid JSON format');
+//             }
+//         });
 
-    } else if (req.url === '/api/employees' && req.method === 'GET') {
-        // Retrieve all employees
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(employees));
+//     } else if (req.url === '/api/employees' && req.method === 'GET') {
+//         // Retrieve all employees
+//         res.writeHead(200, { 'Content-Type': 'application/json' });
+//         res.end(JSON.stringify(employees));
 
-    } else if (req.url.startsWith('/api/employees/') && req.method === 'GET') {
-        // Retrieve a specific employee by ID
-        const id = parseInt(req.url.split('/')[3]);
-        const singleEmployee = employees.find(employee => employee.id === id);
+//     } else if (req.url.startsWith('/api/employees/') && req.method === 'GET') {
+//         // Retrieve a specific employee by ID
+//         const id = parseInt(req.url.split('/')[3]);
+//         const singleEmployee = employees.find(employee => employee.id === id);
 
-        if (singleEmployee) {
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(singleEmployee));
-        } else {
-            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.end('404 EMPLOYEE NOT FOUND');
-        }
+//         if (singleEmployee) {
+//             res.writeHead(200, { 'Content-Type': 'application/json' });
+//             res.end(JSON.stringify(singleEmployee));
+//         } else {
+//             res.writeHead(404, { 'Content-Type': 'text/plain' });
+//             res.end('404 EMPLOYEE NOT FOUND');
+//         }
 
-    } else if (req.url.startsWith('/api/employees/') && req.method === 'PUT') {
-       const id = parseInt(req.url.split('/')[3]);
-        let body = '';
-        req.on('data', (chunk) => {
-            body += chunk;
-        })
+//     }else if(req.url.startsWith('/api/employees/') && req.method === 'PUT') {
+//         const id = parseInt(req.url.split('/')[3]);
+//         let body = '';
+//         req.on('data', chunk => {
+//             body += chunk;
+//         })
 
-        req.on('end', () => {
-            try {
-                const updatedBody = JSON.parse(body);
-                const employeeIndex = employees.findIndex(emp => emp.id === id);
-                if(employeeIndex !== -1) {
-                    employees[employeeIndex] = {...employees[employeeIndex], ...updatedBody};
-                    res.writeHead(201, {'Content-Type': 'application/json'});
-                    res.end(JSON.stringify(employees[employeeIndex]));
-                }else {
-                    res.writeHead(404, {'Content-Type': 'text/plain'});
-                    res.end('404 EMPLOYEE NOT FOUND');
-                }
-                
-            } catch (error) {
-                res.writeHead(400, { 'Content-Type': 'text/plain' });
-                res.end('Invalid JSON format');
-            }
-        })
+//         req.on('end', () => {
+//             try {
+//                 const updatedEmp = JSON.parse(body);
+//                 const employeeIndex = employees.findIndex(emp => emp.id === id);
+//                 if(employeeIndex !== -1){
+//                     employees[employeeIndex] = { ...employees[employeeIndex], ...updatedEmp};
+//                     res.writeHead(200, {'Content-Type': 'application/json'});
+//                     res.end(JSON.stringify(employees[employeeIndex]));
+//                 }
+//             } catch (error) {
+//                 res.writeHead(404, {'Content-Type': 'text/plain'});
+//                 res.end('404 EMPLOYEE NOT FOUND');
+//             }
+//         })
+//     }else if(req.url.startsWith('/api/employees/') && req.method === 'DELETE') {
+//         const id = parseInt(req.url.split('/')[3]);
+//         const employeeIndex = employees.findIndex(emp => emp.id === id);
+//         if(employeeIndex !== -1) {
+//             employees.splice(employeeIndex, 1);
+//             res.writeHead(200, {'Content-Type': 'text/plain'});
+//             res.end('SUCCESSFULLY DELETED');
+//         }else {
+//             res.writeHead(404, {'Content-Type': 'text/plain'});
+//             res.end('EMPLOYEE NOT FOUND');
+//         }
+//     }
+// });
 
-    } else {
-        // If no route matches, return 404 Not Found
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Route Not Found');
-    }
-});
+// server.listen(3000, () => {
+//     console.log('Server is running on port 3000');
+// });
 
-server.listen(3000, () => {
-    console.log('Server is running on port 3000');
-});
+// EVENT EMITTER
+
+const EventEmitter = require('events');
+const eventEmitter = new EventEmitter();
+
+// eventEmitter.on('myHello', () => {
+//     fs.readFile('./new.txt', 'utf8', (err, data) => {
+//         if(err) {
+//             console.error(err)
+//         }else {
+//             console.log(data);
+//         }
+//     })
+// })
+
+
+// eventEmitter.emit('myHello');
+
+// Modules
+
+const math = require('./sum');
+
+console.log(math.add(2, 4));
+console.log(math.subtract(3, 2));
