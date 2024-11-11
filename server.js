@@ -145,7 +145,7 @@ const newFolder = './guy';
 
 // working with files in node js
 
-const fs = require('node:fs');
+// const fs = require('node:fs');
 
 // 1: reading files 
 // method 1
@@ -297,7 +297,7 @@ const fs = require('node:fs');
 // })
 
 // path modules
-const path = require('node:path')
+// const path = require('node:path')
 // fs.readFile(path.join(__dirname, 'newRenamed', 'hello.txt'), 'utf8', (err, data) => {
 //     if(err){
 //         console.error(err);
@@ -332,16 +332,16 @@ const path = require('node:path')
 // console.log(fileExtension);
 
 // path.parse()
-const parsedPath = path.parse('./newRenamed/home.txt');
+// const parsedPath = path.parse('./newRenamed/home.txt');
 // console.log(parsedPath);
 
 // path.format()
-const formatedPath = path.format(parsedPath);
+// const formatedPath = path.format(parsedPath);
 // console.log(formatedPath);
 
 
 // creating a server
-const http = require('http');
+// const http = require('http');
 // const server = http.createServer((req, res) => {
 //     res.end('HELLO WORLD!');
 // })
@@ -536,7 +536,57 @@ const eventEmitter = new EventEmitter();
 
 // Modules
 
-const math = require('./sum');
+// const math = require('./sum');
 
-console.log(math.add(2, 4));
-console.log(math.subtract(3, 2));
+// console.log(math.add(2, 4));
+// console.log(math.subtract(3, 2));
+
+
+// serving static files
+
+const path = require('path');
+const fs = require('fs');
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+    let filepath = req.url === '/' ? '/index.html' : req.url;
+    filepath = path.join(__dirname, 'public', filepath);
+    let ext = path.extname(filepath);
+    let contentType = 'text/html';
+
+    // switch (ext) {
+    //     case '.css':
+    //         contentType = 'text/css';
+    //         break;
+    //     case '.js':
+    //         contentType = 'application/javascript';
+    //         break;
+    //     case '.png':
+    //         contentType = 'image/png';
+    //         break;
+    //     case '.jpg':
+    //     case '.jpeg':
+    //         contentType = 'image/jpeg';
+    //         break;
+    // }
+
+    fs.readFile(filepath, (err, data) => {
+        if(err) {
+            if(err.code === 'ENOENT') {
+                res.writeHead(404, {'Content-Type': 'text/plain'});
+                res.end('404 PAGE NOT FOUND');
+            } else {
+                // Some other server error
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Server Error');
+            }
+        }else {
+            res.writeHead(200, {'Content-Type': contentType})
+            res.end(data, 'utf8' )
+        }
+    })
+})
+
+server.listen(3000, () => {
+    console.log('server running on port 3000')
+})
